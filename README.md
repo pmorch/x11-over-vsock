@@ -32,34 +32,46 @@ In Windows, start a X server (e.g. VcXsrv) on TCP port 6000, and you can either:
 
 ### Installation
 
-Perform both these tasks - on Windows and inside WSL2 - to get a fully-automatic setup that "does the right thing" even after reboot without manual intervention:
+Perform both these tasks - on Windows and inside WSL2 - to get a
+fully-automatic setup that "does the right thing" even after reboot without
+manual intervention:
 
 *On Windows:*
 
-* Copy the `x11-over-vsock.exe` e.g. to `C:\Program Files`.
+* Copy `x11-over-vsock.exe` e.g. to
+  `%USERPROFILE%\.cargo\bin\x11-over-vsock.exe` if you didn't build it
+  yourself.
 * Create a Scheduled Task to start `x11-over-vsock.exe` at login
     * Open "Task Scheduler"
     * Actions &rarr; "Create Task..."
     * General (tab): Run with highest privileges
     * Triggers (tab): New (button), Begin the task, At log on
-    * Actions (tab): Start a program, Program/script = "C:\Program Files\x11-over-vsock.exe" (including quotes!),
-      Add arguments = --daemon
+    * Actions (tab): Start a program, Program/script =
+      `%USERPROFILE%\.cargo\bin\x11-over-vsock.exe` (remember quotes if
+      appropriate!),
+      Add arguments = `--daemon`
+    * Conditions (tab): Uncheck "Start the task only if the computer is on AC
+      power" and "Stop if the computer switches to battery power"
+    * Settings (tab): Uncheck "Stop the task if it runs longer than"
 
-It should now start up at every boot as Administrator with the `--daemon` option.
-Now either start `x11-over-vsock.exe` from a `cmd.exe` prompt as Administrator yourself or reboot the Windows 10 installation
-to start it.
+It should now start up at every boot as Administrator with the `--daemon`
+option. Now either start `x11-over-vsock.exe` by right-click-ing on the newly
+created task and clicking "Run" or reboot the Windows 10 installation to start
+it.
 
 *On Linux under WSL2:*
 
-* Put `x11-over-vsock` somewhere. I put it in `~/bin/local/x11-over-vsock`.
-* Make sure `xset` is in your path, e.g. with `sudo apt-get install x11-xserver-utils` in Ubuntu.
+* Copy `x11-over-vsock` e.g. to `~/.cargo/bin/x11-over-vsock` if you didn't
+  build it yourself.
+* Make sure `xset` is in your path, e.g. with `sudo apt-get install
+  x11-xserver-utils` in Ubuntu.
 * Add this to your `~/.bashrc` or `~/.zshrc`:
 
 ``` bash
 export DISPLAY=:0
 
 if ! pgrep x11-over-vsock >> /dev/null 2>&1 ; then
-    nohup ~/bin/local/x11-over-vsock > /dev/null < /dev/null 2>&1 &
+    nohup ~/.cargo/bin/x11-over-vsock > /dev/null < /dev/null 2>&1 &
     disown
 
     # sleep until $DISPLAY is up
